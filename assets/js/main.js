@@ -56,6 +56,8 @@ function initGallery() {
 
       if (type === 'video') {
         mainSlot.innerHTML = '<video src="' + src + '" controls playsinline></video>';
+      } else if (type === 'drive-video') {
+        mainSlot.innerHTML = '<iframe src="' + src + '" width="100%" height="480" allow="autoplay" style="border:0; display:block;" allowfullscreen></iframe>';
       } else {
         mainSlot.innerHTML = '<img src="' + src + '" alt="Foto do imóvel">';
         mainSlot.querySelector('img').addEventListener('click', function () {
