@@ -402,6 +402,28 @@ img { max-width: 100%; display: block; }
 
 .media-main video, .media-main img { width: 100%; display: block; }
 
+.media-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 18px;
+  border: 1px solid var(--ink);
+  background: var(--paper-raised);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.media-download:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
 .thumb-strip {
   display: grid;
   grid-template-columns: repeat(6, 1fr);

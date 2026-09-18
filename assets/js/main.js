@@ -44,7 +44,51 @@ function initGallery() {
   var lightboxImg = lightbox ? lightbox.querySelector('img') : null;
   var lightboxClose = document.querySelector('.lightbox-close');
 
-  if (!mainSlot || thumbs.length === 0) return;
+  if (!mainSlot) return;
+
+  function driveIdFromPreviewUrl(url) {
+    var match = url.match(/\/file\/d\/([^/]+)\//);
+    return match ? match[1] : null;
+  }
+
+  function renderDownloadButton(type, src) {
+    var old = document.getElementById('media-download');
+    if (old) old.remove();
+
+    var href = null;
+    if (type === 'video') {
+      href = src;
+    } else if (type === 'drive-video') {
+      var id = driveIdFromPreviewUrl(src);
+      if (id) href = 'https://drive.google.com/uc?export=download&id=' + id;
+    }
+    if (!href) return;
+
+    var a = document.createElement('a');
+    a.id = 'media-download';
+    a.className = 'media-download';
+    a.href = href;
+    a.textContent = '⬇ Baixar vídeo';
+    if (type === 'video') a.setAttribute('download', '');
+    if (type === 'drive-video') a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener');
+    mainSlot.insertAdjacentElement('afterend', a);
+  }
+
+  // Se a página já carrega com um vídeo ativo, mostra o botão de download de imediato
+  var initialActive = document.querySelector('.thumb-strip button.active');
+  if (initialActive) {
+    var initType = initialActive.getAttribute('data-type');
+    if (initType === 'video' || initType === 'drive-video') {
+      renderDownloadButton(initType, initialActive.getAttribute('data-src'));
+    }
+  } else if (mainSlot.querySelector('video')) {
+    renderDownloadButton('video', mainSlot.querySelector('video').getAttribute('src'));
+  } else if (mainSlot.querySelector('iframe')) {
+    renderDownloadButton('drive-video', mainSlot.querySelector('iframe').getAttribute('src'));
+  }
+
+  if (thumbs.length === 0) return;
 
   thumbs.forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -56,9 +100,13 @@ function initGallery() {
 
       if (type === 'video') {
         mainSlot.innerHTML = '<video src="' + src + '" controls playsinline></video>';
+        renderDownloadButton('video', src);
       } else if (type === 'drive-video') {
         mainSlot.innerHTML = '<iframe src="' + src + '" width="100%" height="480" allow="autoplay" style="border:0; display:block;" allowfullscreen></iframe>';
+        renderDownloadButton('drive-video', src);
       } else {
+        var old = document.getElementById('media-download');
+        if (old) old.remove();
         mainSlot.innerHTML = '<img src="' + src + '" alt="Foto do imóvel">';
         mainSlot.querySelector('img').addEventListener('click', function () {
           openLightbox(src);
